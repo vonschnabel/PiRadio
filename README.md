@@ -21,7 +21,7 @@ sudo reboot
 wget https://www.w3schools.com/w3css/4/w3.css
 wget http://code.jquery.com/jquery-1.11.3.min.js
 wget http://code.jquery.com/jquery-migrate-1.2.1.min.js
-git clone https://github.com/vonschnabel/RaspiAP.git
+git clone https://github.com/vonschnabel/PiRadio
 git clone https://github.com/markondej/fm_transmitter
 
 sudo mv ./w3.css /var/www/html/
