@@ -32,6 +32,7 @@ sudo chown root:root /etc/sudoers.d/090_raspap
 sudo chmod 440 /etc/sudoers.d/090_raspap
 sudo mv ./RaspiAP/functions.php /var/www/html/
 sudo mv ./RaspiAP/hotspot.php /var/www/html/
+chmod +x radio.sh
 rm -rf RaspiAP
 mkdir audio
 cd fm_transmitter
