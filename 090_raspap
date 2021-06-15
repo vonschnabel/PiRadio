@@ -1,0 +1,55 @@
+www-data ALL=(ALL) NOPASSWD:/bin/cp /var/www/html/tmp/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
+www-data ALL=(ALL) NOPASSWD:/bin/cp /var/www/html/tmp/hostapd.conf /etc/hostapd/hostapd.conf
+www-data ALL=(ALL) NOPASSWD:/bin/cp /var/www/html/tmp/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
+www-data ALL=(ALL) NOPASSWD:/bin/cp /var/www/html/tmp/dhcpcd.conf /etc/dhcpcd.conf
+
+www-data ALL=(ALL) NOPASSWD:/sbin/ip
+www-data ALL=(ALL) NOPASSWD:/sbin/ip link set wlan1 down
+www-data ALL=(ALL) NOPASSWD:/sbin/ip link set wlan1 address *
+www-data ALL=(ALL) NOPASSWD:/sbin/ip link set wlan1 up
+
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli -i wlan1 scan
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli -i wlan1 scan_results
+
+www-data ALL=(ALL) NOPASSWD:/sbin/shutdown -h now
+www-data ALL=(ALL) NOPASSWD:/sbin/reboot
+
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl stop hostapd.service
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl start hostapd.service
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl stop dnsmasq.service
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl start dnsmasq.service
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl stop dhcpcd.service
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl start dhcpcd.service
+
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli add_network
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli set_network [0-9]* ssid *
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli set_network [0-9]* psk *
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli set_network [0-9]* scan_ssid 1
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli set_network [0-9]* key_mgmt WPA-PSK
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli set_network [0-9]* key_mgmt NONE
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli -i wlan1 reconfigure
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli -i wlan1 disconnect
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli -i wlan1 reassociate
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli list_networks
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli -i wlan1 select_network [0-9]*
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli remove_network [0-9]*
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli status
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli -i wlan1 signal_poll
+www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli save_config
+
+www-data ALL=(ALL) NOPASSWD:/sbin/iw dev wlan0 station dump
+
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl is-active wg-quick@*
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl start wg-quick@*
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl stop wg-quick@*
+www-data ALL=(ALL) NOPASSWD:/bin/ls /etc/wireguard
+
+www-data ALL=(ALL) NOPASSWD:/sbin/iptables -t nat -A POSTROUTING -o * -j MASQUERADE
+www-data ALL=(ALL) NOPASSWD:/sbin/iptables -A FORWARD -i * -o wlan1 -j ACCEPT
+www-data ALL=(ALL) NOPASSWD:/sbin/iptables -A FORWARD -i wlan1 -o * -j ACCEPT
+www-data ALL=(ALL) NOPASSWD:/sbin/iptables -t nat -D POSTROUTING -o * -j MASQUERADE
+www-data ALL=(ALL) NOPASSWD:/sbin/iptables -D FORWARD -i * -o wlan1 -j ACCEPT
+www-data ALL=(ALL) NOPASSWD:/sbin/iptables -D FORWARD -i wlan1 -o * -j ACCEPT
+
+www-data ALL=(ALL) NOPASSWD:/bin/sh /home/ast/radio.sh *
+www-data ALL=(ALL) NOPASSWD:/bin/kill -INT *
