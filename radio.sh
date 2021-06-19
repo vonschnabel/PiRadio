@@ -7,7 +7,7 @@ do
 done
 #echo "Audiofile $filename";
 #echo "Frequency $frequency";
-sox $filename -r 22050 -c 1 -b 16 -t wav - | sudo /home/ast/fm_transmitter/fm_transmitter -f $frequency - > /dev/null
+sox "$filename" -r 22050 -c 1 -b 16 -t wav - | sudo /home/ast/fm_transmitter/fm_transmitter -f $frequency -
 #echo "hallo";
 #sleep 600;
 #echo "welt";
