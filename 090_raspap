@@ -53,3 +53,4 @@ www-data ALL=(ALL) NOPASSWD:/sbin/iptables -D FORWARD -i wlan1 -o * -j ACCEPT
 
 www-data ALL=(ALL) NOPASSWD:/bin/sh /home/ast/radio.sh *
 www-data ALL=(ALL) NOPASSWD:/bin/kill -INT *
+www-data ALL=(ALL) NOPASSWD:/bin/soxi -D *
