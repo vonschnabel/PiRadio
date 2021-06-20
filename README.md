@@ -31,6 +31,7 @@ sudo mv ./jquery-migrate-1.2.1.min.js /var/www/html/
 sudo mv ./RaspiAP/090_raspap /etc/sudoers.d
 sudo chown root:root /etc/sudoers.d/090_raspap
 sudo chmod 440 /etc/sudoers.d/090_raspap
+sudo mv ./PiRadio/fmradio.php /var/www/html
 sudo mv ./RaspiAP/functions.php /var/www/html/
 sudo mv ./RaspiAP/hotspot.php /var/www/html/
 sudo mv ./RaspiAP/setup-hotspot.sh setup-hotspot.sh
@@ -38,6 +39,7 @@ chmod +x setup-hotspot.sh
 sudo mv ./PiRadio/radio.sh radio.sh
 chmod +x radio.sh
 rm -rf RaspiAP
+rm -rf PiRadio
 mkdir audio
 cd fm_transmitter
 make
