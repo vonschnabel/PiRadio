@@ -35,6 +35,7 @@ sudo mv ./RaspiAP/functions.php /var/www/html/
 sudo mv ./RaspiAP/hotspot.php /var/www/html/
 sudo mv ./RaspiAP/setup-hotspot.sh setup-hotspot.sh
 chmod +x setup-hotspot.sh
+sudo mv ./PiRadio/radio.sh radio.sh
 chmod +x radio.sh
 rm -rf RaspiAP
 mkdir audio
