@@ -6,8 +6,9 @@ if(isset($_POST['btnStartRadio'])) {
         $message = "Radio was started";
 //        $message = $_POST['audiopath'];
 //        $message = $_POST['frequency'];
-        echo "<script type='text/javascript'>alert('$message');</script>";
+
         startRadio($audiopath,$frequency);
+        echo "<script type='text/javascript'>alert('$message');</script>";
 }
 
 if(isset($_POST['btnStopRadio'])) {
@@ -22,7 +23,7 @@ function stopRadio(){
                 if (strpos($result[$i], 'fm_transmitter') !== false){
                         $pid = preg_split('/\s+/',$result[$i]);
 			$pid = $pid[1];
-                        echo "$pid<br>";
+                        //echo "$pid<br>";
                         exec('sudo /bin/kill -INT ' . $pid);
                 }
         }
@@ -46,10 +47,11 @@ function startRadio($audiopath,$frequency){
         $audiofilesstring = "";*/
 
 	$audiofilesstring = $audiopath;
+////        $audiofilesstring = "\"" . $audiopath . "\"";
 
-        foreach ($audiofiles as $val){
+/*        foreach ($audiofiles as $val){
                 $audiofilesstring = $audiofilesstring . $val . " ";
-        }
+        }*/
 
         exec('sudo /bin/sh /home/ast/radio.sh -f ' . $frequency . ' -n "' . $audiofilesstring . '"' . " > /dev/null 2>/dev/null &");
 //      echo date(DATE_RFC822);
@@ -62,9 +64,15 @@ function getAudioList(){
 		$row = array();
 		$row['path'] = $result[$i];
 
+//		exec('soxi -d "' .  $result[$i] . '"',$filelength);
+//		$row['filelength'] = $filelength[0];
+//		echo "$result[$i]  $filelength[0]<br>";
+
 		$row_tmp =  explode('/',$result[$i]);
 		$row_tmp = end($row_tmp);
 		$row['filename'] = $row_tmp;
+
+		unset($filelength);
 
 		array_push($audiolist, $row);
 	}
@@ -75,4 +83,5 @@ function getFrequency(){
 	exec('cat /var/www/html/tmp/frequency.txt', $result);
 }
 
+getAudioList()
 ?>
