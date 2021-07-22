@@ -55,7 +55,7 @@ done
 IFS=$'\n' sortedaudiopaths=($(sort <<<"${audiopaths[*]}")); unset IFS # sort the array in alphabetical order
 
 # Transfer files and folder structure into database
-mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"CREATE TABLE IF NOT EXISTS $TABLE (id MEDIUMINT NOT NULL AUTO_INCREMENT, filename CHAR(100), path CHAR(200) NOT NULL, length CHAR(50), parent MEDIUMINT, PRIMARY KEY (id));";
+mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"CREATE TABLE IF NOT EXISTS $TABLE (id MEDIUMINT NOT NULL AUTO_INCREMENT, filename CHAR(100), path CHAR(200) NOT NULL, length CHAR(50), parent_id MEDIUMINT, PRIMARY KEY (id));";
 mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"TRUNCATE $TABLE"; # clear table every time. possible improvement to check if file exists in DB instead of deleting the table content every time
 
 for i in "${sortedaudiopaths[@]}"; do
@@ -82,6 +82,24 @@ readarray -t arrfolderspath <<<${pathfolders}
 readarray -t arrfoldersid <<<${idfolders}
 readarray -t arraudiofilespath <<<${pathaudiofiles}
 
+for ((i = 0 ; i < ${#arrfolderspath[@]} ; i++)); do # set the parent ID for the folders
+  readarray -d / -t arr <<<${arrfolderspath[$i]}
+  declare -i len=${#arr[@]}-1
+  if [ $len == 1 ]; then # root folders get the ID 0
+    mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"UPDATE $TABLE SET parent_id = 0 WHERE path = '${arrfolderspath[$i]}';"
+  else
+    parentpath=""
+    for ((j = $len ; j > 1 ; j--)); do
+      parentpath="${parentpath}/${arr[-$j]}"
+    done
+    for ((k = 0 ; k < ${#arrfolderspath[@]} ; k++)); do
+      if [[ "${arrfolderspath[$k]}" == $parentpath ]]; then
+        mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"UPDATE $TABLE SET parent_id = ${arrfoldersid[$k]} WHERE path = '${arrfolderspath[$i]}';"
+      fi
+    done
+  fi
+done
+
 for ((i = 0 ; i < ${#arraudiofilespath[@]} ; i++)); do
   filename=${arraudiofilespath[$i]}
   arraudiofilespath[$i]=${arraudiofilespath[$i]#$path}
@@ -95,10 +113,10 @@ for ((i = 0 ; i < ${#arraudiofilespath[@]} ; i++)); do
 
   for ((k = 0 ; k < ${#arrfolderspath[@]} ; k++)); do
     if [[ "${arrfolderspath[$k]}" == $pathtmp ]]; then
-      mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"UPDATE $TABLE SET parent = ${arrfoldersid[$k]} WHERE path = '$filename';"
+      mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"UPDATE $TABLE SET parent_id = ${arrfoldersid[$k]} WHERE path = '$filename';"
     fi
   done
 done
 
 # set the parent ID 0 for all files in the root path
-mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"UPDATE $TABLE SET parent = 0 WHERE (parent IS NULL) AND (filename IS NOT NULL);"
+mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"UPDATE $TABLE SET parent_id = 0 WHERE (parent_id IS NULL) AND (filename IS NOT NULL);"
