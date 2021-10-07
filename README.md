@@ -20,13 +20,13 @@ sudo mv ./PiRadio/piradio.conf /usr/local/bin/
 sudo mv ./PiRadio/db-update.sh /usr/local/bin
 sudo mv ./PiRadio/guard-radio.sh /usr/local/bin
 sudo mv ./PiRadio/radio.sh /usr/local/bin
-sudo mv ./PiRadio/piradio.conf /usr/local/bin
 sudo chmod +x /usr/local/bin/db-update.sh
 sudo chmod +x /usr/local/bin/guard-radio.sh
 sudo chmod +x /usr/local/bin/radio.sh
 ln -s /usr/local/bin/piradio.conf ~/.piradio.conf
 sudo mv ./PiRadio/piradio.html /var/www/html/PiRadio/
 sudo mv ./PiRadio/fmradio.php /var/www/html/PiRadio/
+rm -rf PiRadio/
 
 sudo wget -P /var/www/html/PiRadio https://raw.githack.com/SortableJS/Sortable/master/Sortable.js
 sudo wget -P /var/www/html/PiRadio https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css
@@ -41,3 +41,5 @@ sudo make
 git clone https://github.com/daweilv/treejs
 sudo mv ./treejs/dist /var/www/html/PiRadio
 sudo mv ./treejs/src /var/www/html/PiRadio
+sudo rm -rf treejs/
+
