@@ -1,0 +1,4 @@
+www-data ALL=(ALL) NOPASSWD:/bin/bash /usr/local/bin/radio.sh *
+www-data ALL=(ALL) NOPASSWD:/bin/kill -INT *
+www-data ALL=(ALL) NOPASSWD:/bin/kill -9 *
+www-data ALL=(ALL) NOPASSWD:/bin/soxi -D *
