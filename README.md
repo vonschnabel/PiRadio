@@ -4,42 +4,40 @@ Installation:
 
 ``` 
 sudo apt update && sudo apt upgrade -y
-sudo apt install apache2 php php-mbstring libapache2-mod-php hostapd dnsmasq git make build-essential sox libsox-fmt-mp3 -y
+sudo apt install mariadb-server php-mysql apache2 php php-mbstring libapache2-mod-php hostapd dnsmasq git make build-essential sox libsox-fmt-mp3 -y
+sudo mysql -e "CREATE DATABASE piradio"
+sudo mysql -e "CREATE USER 'www-data'@'localhost' IDENTIFIED BY 'dbpassword';"
+sudo mysql -e "GRANT ALL PRIVILEGES ON piradio.* TO 'www-data'@'localhost';"
+sudo mysql -e "FLUSH PRIVILEGES;"
+mysql -Dpiradio -uwww-data -pdbpassword -e"CREATE TABLE IF NOT EXISTS audiofiles (id MEDIUMINT NOT NULL AUTO_INCREMENT, filename CHAR(255), path CHAR(255) NOT NULL, length CHAR(50), parent_id MEDIUMINT, PRIMARY KEY (id));";
 
-sudo sed -i 's/Priv/#Priv/g' /lib/systemd/system/apache2.service
-
-sudo mkdir /var/www/html/tmp
-sudo chown www-data:www-data /var/www/html/tmp
-
-sudo systemctl unmask hostapd
-sudo systemctl enable hostapd
-
-sudo /bin/su -c "echo net.ipv4.ip_forward=1 >> /etc/sysctl.d/99-sysctl.conf"
-
-sudo reboot
-
-wget https://www.w3schools.com/w3css/4/w3.css
-wget http://code.jquery.com/jquery-1.11.3.min.js
-wget http://code.jquery.com/jquery-migrate-1.2.1.min.js
 git clone https://github.com/vonschnabel/PiRadio
-git clone https://github.com/vonschnabel/RaspiAP.git
-git clone https://github.com/markondej/fm_transmitter
+sudo mkdir /var/www/html/PiRadio
+sudo mv ./PiRadio/080_piradio /etc/sudoers.d/
+sudo chown root:root /etc/sudoers.d/080_piradio
+sudo chmod 440 /etc/sudoers.d/080_piradio
+sudo mv ./PiRadio/piradio.conf /usr/local/bin/
+sudo mv ./PiRadio/db-update.sh /usr/local/bin
+sudo mv ./PiRadio/guard-radio.sh /usr/local/bin
+sudo mv ./PiRadio/radio.sh /usr/local/bin
+sudo mv ./PiRadio/piradio.conf /usr/local/bin
+sudo chmod +x /usr/local/bin/db-update.sh
+sudo chmod +x /usr/local/bin/guard-radio.sh
+sudo chmod +x /usr/local/bin/radio.sh
+ln -s /usr/local/bin/piradio.conf ~/.piradio.conf
+sudo mv ./PiRadio/piradio.html /var/www/html/PiRadio/
+sudo mv ./PiRadio/fmradio.php /var/www/html/PiRadio/
 
-sudo mv ./w3.css /var/www/html/
-sudo mv ./jquery-1.11.3.min.js /var/www/html/
-sudo mv ./jquery-migrate-1.2.1.min.js /var/www/html/
-sudo mv ./PiRadio/090_raspap /etc/sudoers.d
-sudo chown root:root /etc/sudoers.d/090_raspap
-sudo chmod 440 /etc/sudoers.d/090_raspap
-sudo mv ./PiRadio/fmradio.php /var/www/html
-sudo mv ./RaspiAP/functions.php /var/www/html/
-sudo mv ./RaspiAP/hotspot.php /var/www/html/
-sudo mv ./RaspiAP/setup-hotspot.sh setup-hotspot.sh
-chmod +x setup-hotspot.sh
-sudo mv ./PiRadio/radio.sh radio.sh
-chmod +x radio.sh
-rm -rf RaspiAP
-rm -rf PiRadio
-mkdir audio
-cd fm_transmitter
-make
+sudo wget -P /var/www/html/PiRadio https://raw.githack.com/SortableJS/Sortable/master/Sortable.js
+sudo wget -P /var/www/html/PiRadio https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css
+sudo wget -P /var/www/html/PiRadio https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js
+sudo wget -P /var/www/html/PiRadio https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js
+
+git clone https://github.com/markondej/fm_transmitter
+sudo mv ./fm_transmitter/ /usr/local/bin
+cd /usr/local/bin/fm_transmitter
+sudo make
+
+git clone https://github.com/daweilv/treejs
+sudo mv ./treejs/dist /var/www/html/PiRadio
+sudo mv ./treejs/src /var/www/html/PiRadio
