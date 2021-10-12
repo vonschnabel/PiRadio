@@ -291,16 +291,20 @@ function createPlaylist(playlist){
 function PlayPlaylist(playlist){
   var fmplaylist = [];
   for(var i = 0; i < playlist.el.children.length; i++){
-    fmplaylist.push(playlist.el.children[i].attributes[2].nodeValue);
+    fmplaylist.push(playlist.el.children[i].attributes[2].nodeValue); // get the file path value
   }
 
   frequency = window.prompt("Enter the Broadcast Frequency between 88.0 - 105.0");
   while(isNaN(frequency) || frequency < 88 || frequency > 105){
+    if(frequency === null)
+    {
+      break;
+    }
     frequency = window.prompt("Enter the Broadcast Frequency between 88.0 - 105.0");
   }
-//  console.log(fmplaylist);
-//  console.log("Frequenz " + frequency);
-  startRadio(fmplaylist, frequency);  
+  if(frequency !== null){    
+    startRadio(fmplaylist, frequency);  
+  }
 }
     </script>
 
