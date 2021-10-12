@@ -171,7 +171,8 @@
       array_push($folders, $row_assoc);
     }
 
-    $query = "select id, parent_id, filename, path, length from $TABLE where length is not NULL order by parent_id;";
+//    $query = "select id, parent_id, filename, path, length from $TABLE where length is not NULL order by parent_id;";
+    $query = "select id, parent_id, filename, path, length from $TABLE where length is not NULL order by filename;";
     mysqli_query($db, $query) or die('Error querying database.');
 
     $result = mysqli_query($db, $query);
