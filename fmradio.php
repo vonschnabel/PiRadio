@@ -54,6 +54,12 @@
       //echo "$result[$i]<br>";
       exec('sudo /bin/kill -9 ' . $result[$i]);
     }
+    exec("pgrep -f guard.sh", $result, $code);
+    for($i = 0; $i < count($result); $i++){
+      //echo "$pid<br>";
+      //echo "$result[$i]<br>";
+      exec('sudo /bin/kill -9 ' . $result[$i]);
+    }
     exec("ps -fC fm_transmitter", $result, $code);
     for($i = 0; $i < count($result); $i++){
       if (strpos($result[$i], 'fm_transmitter') !== false){
