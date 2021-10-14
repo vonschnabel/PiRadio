@@ -78,7 +78,8 @@
 
   function startRadio($audiopath, $frequency){
     stopRadio();
-    usleep(300000);
+    sleep(1);
+    //usleep(300000);
     exec('sudo /bin/bash /usr/local/bin/radio.sh -f ' . $frequency . ' -n "' . $audiopath . '"' . " > /dev/null 2>/dev/null &");
   }
 
