@@ -25,7 +25,7 @@ for ((i = 0 ; i < ${#audiofiles[@]} ; i++)); do
   fi
 done
 
-bash /usr/local/bin/guard-radio.sh &
+bash /usr/local/bin/guard.sh &
 guard_PID=$!
 
 for i in "${audiofiles[@]}"; do
