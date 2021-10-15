@@ -38,7 +38,7 @@ sudo mv ./PiRadio/radio.sh /usr/local/bin
 sudo chmod +x /usr/local/bin/db-update.sh
 sudo chmod +x /usr/local/bin/guard.sh
 sudo chmod +x /usr/local/bin/radio.sh
-ln -s /usr/local/bin/piradio.conf ~/.piradio.conf
+ln -s /usr/local/bin/piradio.conf .piradio.conf
 sudo mv ./PiRadio/piradio.html /var/www/html/piradio/
 sudo mv ./PiRadio/fmradio.php /var/www/html/piradio/
 rm -rf PiRadio/
