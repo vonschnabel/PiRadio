@@ -190,14 +190,13 @@ async function createStatusInformation(){
   console.log(radiostatus);
 
   if(radiostatus.files == null && radiostatus.frequency == null){
-    console.log("keine audio datei wird momentan gespielt");
     var elements = document.getElementById("emptyShellRadioStatus");
     while (elements.hasChildNodes()) {
       elements.removeChild(elements.firstChild);
     }
 
     var broadcastText = document.createElement("b");
-    broadcastText.innerHTML = "No FM Broadcasting at the moment"
+    broadcastText.innerHTML = "No FM Broadcasting at the moment";
     elements.appendChild(broadcastText);
   }
   else{
@@ -206,7 +205,8 @@ async function createStatusInformation(){
     while (elements.hasChildNodes()) {
       elements.removeChild(elements.firstChild);
     }    
-
+    var frequencyText = document.createElement("b");
+    frequencyText.innerHTML = "Frequency: " + radiostatus.frequency;
     var rowDIV = document.createElement("DIV");
     rowDIV.className = "row";
     var colDIV = document.createElement("DIV");
@@ -238,6 +238,7 @@ async function createStatusInformation(){
 
     colDIV.appendChild(listgroupDIV);
     rowDIV.appendChild(colDIV);
+    elements.appendChild(frequencyText);
     elements.appendChild(rowDIV);
 
     var actuallist = new Sortable(actualplayedplaylist, {
