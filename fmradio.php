@@ -35,6 +35,9 @@
   if(isset($_GET['getAudioJSON'])) {
     echo getAudioJSON();
   }
+  if(isset($_GET['getRadioStatus'])) {
+    echo getRadioStatus();
+  }
 
   function skipSong(){
     exec("ps -fC fm_transmitter", $result, $code);
@@ -79,8 +82,47 @@
   function startRadio($audiopath, $frequency){
     stopRadio();
     sleep(1);
-    //usleep(300000);
+    //usleep(500000);
     exec('sudo /bin/bash /usr/local/bin/radio.sh -f ' . $frequency . ' -n "' . $audiopath . '"' . " > /dev/null 2>/dev/null &");
+  }
+
+  function getRadioStatus(){
+    exec('pgrep -fa sox',$result,$code);
+    for($i = 0; $i < count($result); $i++){
+      if(strpos($result[$i], 'sh -c pgrep -fa') == false){
+        $nowplayed = preg_split('/-r/',$result[$i]);
+        $nowplayed = $nowplayed[0];
+        $nowplayed = preg_split('/sox/',$nowplayed);
+        $nowplayed = $nowplayed[1];
+//        $nowplayed = ltrim($nowplayed);
+        $nowplayed = preg_split('/\//',$nowplayed);
+        $nowplayed = end($nowplayed);
+        $nowplayed = rtrim($nowplayed);
+      }
+    }
+    exec('pgrep -fa "sudo /bin/bash /usr/local/bin/radio.sh"',$result,$code);
+    for($i = 0; $i < count($result); $i++){
+      if(strpos($result[$i], 'sh -c pgrep -fa') == false){
+        $frequency = preg_split('/-n/',$result[$i]);
+        $files = $frequency[1];
+        $files = preg_split('/.mp3/',$files);
+        unset($files[count($files)-1]);
+        $frequency = preg_split('/-f/',$frequency[0]);
+        $frequency = $frequency[1];
+        $frequency = preg_replace("/\s+/", "", $frequency);
+      }
+    }
+    for($i = 0; $i < count($files ); $i++){
+      $files[$i] = $files[$i] . ".mp3";
+//      $files[$i] = ltrim($files[$i]);
+      $files[$i] = preg_split('/\//',$files[$i]);
+      $files[$i] = end($files[$i]);
+    }
+    $data = array();
+    $data['nowplayed'] = $nowplayed;
+    $data['frequency'] = $frequency;
+    $data['files'] = $files;
+    echo json_encode($data);
   }
 
   function getAudioList(){ // deprecated
