@@ -4,6 +4,40 @@ Installation:
 
 ``` 
 sudo apt update && sudo apt upgrade -y
+sudo apt install git
+git clone https://github.com/vonschnabel/PiRadio.git
+mv ./PiRadio/setup-RaspiAP.sh ./
+chmod +x ./setup-piradio.sh
+sudo ./setup-piradio.sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+sudo apt update && sudo apt upgrade -y
 sudo apt install mariadb-server php-mysql apache2 php php-mbstring libapache2-mod-php hostapd dnsmasq git make build-essential sox libsox-fmt-mp3 -y
 sudo mysql -e "CREATE DATABASE piradio"
 sudo mysql -e "CREATE USER 'www-data'@'localhost' IDENTIFIED BY 'dbpassword';"
