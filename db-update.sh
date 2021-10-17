@@ -75,14 +75,19 @@ done
 
 for i in "${audiofiles[@]}"; do
   length=$(soxi -V0 -d "$i") # -V0 Log Level 0, suppress warnings
-  length="${length:1}" # delete first char. audio files max length ist therefore 9 hours 59 minutes
-  length="${length::-3}" # delete the last 3 chars (Miliseconds)
-  if [[ $length == 0:* ]]; then length="${length:2}"; else : ; fi # if length is lower than one hour, delete the hour chars
-  IFS='/' read -r -a patharray <<< $i # split by '/'
-  filename="${patharray[-1]}" # get the last element of splitted string
-  pathvar=$i
-  mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"INSERT INTO $TABLE (filename, path, length) VALUES ('$filename', '$pathvar', '$length');"
+  if [ -z "$length" ];then # length could not be read. skipping this file
+    echo "the length of this file could not be read, skipping it: $i"
+  else
+    length="${length:1}" # delete first char. audio files max length ist therefore 9 hours 59 minutes
+    length="${length::-3}" # delete the last 3 chars (Miliseconds)
+    if [[ $length == 0:* ]]; then length="${length:2}"; else : ; fi # if length is lower than one hour, delete the hour chars
+    IFS='/' read -r -a patharray <<< $i # split by '/'
+    filename="${patharray[-1]}" # get the last element of splitted string
+    pathvar=$i
+    mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"INSERT INTO $TABLE (filename, path, length) VALUES ('$filename', '$pathvar', '$length');"
+  fi
 done
+
 
 pathaudiofiles=$(mysql -N -D$DB_NAME -u$DB_USER -p$DB_PASSWD -se "SELECT path FROM $TABLE where length is not NULL")
 pathfolders=$(mysql -N -D$DB_NAME -u$DB_USER -p$DB_PASSWD -se "SELECT path FROM $TABLE where length is NULL")
