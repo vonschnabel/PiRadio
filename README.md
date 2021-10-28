@@ -6,7 +6,7 @@ Installation:
 sudo apt update && sudo apt upgrade -y
 sudo apt install git
 git clone https://github.com/vonschnabel/PiRadio.git
-mv ./PiRadio/setup-RaspiAP.sh ./
+mv ./PiRadio/setup-piradio.sh ./
 chmod +x ./setup-piradio.sh
 sudo ./setup-piradio.sh
 
