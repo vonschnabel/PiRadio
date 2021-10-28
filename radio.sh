@@ -1,16 +1,15 @@
 #!/bin/bash
 source /usr/local/bin/piradio.conf
-
+#echo "##########----------##########"
+#echo ""
 while getopts n:f: flag
 do
 	case "${flag}" in
 		n) filename=${OPTARG};;
 		f) frequency=${OPTARG};;
+                #s) station=${OPTARG};;
 	esac
 done
-
-#echo "Audiofile $filename";
-#echo "Frequency $frequency";
 
 IFS=' ' read -r -a audiofiles <<< $filename # split by space
 
@@ -25,11 +24,13 @@ for ((i = 0 ; i < ${#audiofiles[@]} ; i++)); do
   fi
 done
 
-bash /usr/local/bin/guard.sh &
-guard_PID=$!
-
 for i in "${audiofiles[@]}"; do
 #  echo "$i"
-  sox "$i" -r 22050 -c 1 -b 16 -t wav - | sudo /usr/local/bin/fm_transmitter/fm_transmitter -f $frequency -
+  text=$(basename "$i")
+  IFS='.' read -r -a textarr <<< $text
+#  echo $textarr
+#  echo "$text"
+  text=$textarr
+#  echo "$text"
+  sox -t mp3 "$i" -t wav - | sudo /usr/local/bin/PiFmRds/src/pi_fm_rds -freq $frequency -ps "$STATIONNAME" -rt "$text" -audio -
 done
-kill $guard_PID

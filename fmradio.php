@@ -40,9 +40,9 @@
   }
 
   function skipSong(){
-    exec("ps -fC fm_transmitter", $result, $code);
+    exec("ps -fC pi_fm_rds", $result, $code);
     for($i = 0; $i < count($result); $i++){
-      if (strpos($result[$i], 'fm_transmitter') !== false){
+      if (strpos($result[$i], 'pi_fm_rds') !== false){
         $pid = preg_split('/\s+/',$result[$i]);
         $pid = $pid[1];
         exec('sudo /bin/kill -INT ' . $pid);
@@ -57,15 +57,15 @@
       //echo "$result[$i]<br>";
       exec('sudo /bin/kill -9 ' . $result[$i]);
     }
-    exec("pgrep -f guard.sh", $result, $code);
+/*    exec("pgrep -f guard.sh", $result, $code);
     for($i = 0; $i < count($result); $i++){
       //echo "$pid<br>";
       //echo "$result[$i]<br>";
       exec('sudo /bin/kill -9 ' . $result[$i]);
-    }
-    exec("ps -fC fm_transmitter", $result, $code);
+    }*/
+    exec("ps -fC pi_fm_rds", $result, $code);
     for($i = 0; $i < count($result); $i++){
-      if (strpos($result[$i], 'fm_transmitter') !== false){
+      if (strpos($result[$i], 'pi_fm_rds') !== false){
         $pid = preg_split('/\s+/',$result[$i]);
         $pid = $pid[1];
         //echo "$pid<br>";

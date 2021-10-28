@@ -18,7 +18,7 @@ else
   git clone https://github.com/vonschnabel/PiRadio.git
 fi
 
-sudo apt install mariadb-server php-mysql apache2 php php-mbstring libapache2-mod-php hostapd dnsmasq make build-essential sox libsox-fmt-mp3 -y
+sudo apt install mariadb-server php-mysql apache2 php php-mbstring libapache2-mod-php hostapd dnsmasq libsndfile1-dev make build-essential sox libsox-fmt-mp3 -y
 
 sudo mysql -e "CREATE DATABASE piradio"
 sudo mysql -e "CREATE USER 'www-data'@'localhost' IDENTIFIED BY 'dbpassword';"
@@ -33,10 +33,8 @@ sudo chown root:root /etc/sudoers.d/080_piradio
 sudo chmod 440 /etc/sudoers.d/080_piradio
 sudo mv ./PiRadio/piradio.conf /usr/local/bin/
 sudo mv ./PiRadio/db-update.sh /usr/local/bin
-sudo mv ./PiRadio/guard.sh /usr/local/bin
 sudo mv ./PiRadio/radio.sh /usr/local/bin
 sudo chmod +x /usr/local/bin/db-update.sh
-sudo chmod +x /usr/local/bin/guard.sh
 sudo chmod +x /usr/local/bin/radio.sh
 ln -s /usr/local/bin/piradio.conf .piradio.conf
 sudo mv ./PiRadio/piradio.html /var/www/html/piradio/
@@ -48,10 +46,11 @@ sudo wget -P /var/www/html/piradio https://maxcdn.bootstrapcdn.com/bootstrap/3.3
 sudo wget -P /var/www/html/piradio https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js
 sudo wget -P /var/www/html/piradio https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js
 
-git clone https://github.com/markondej/fm_transmitter
-sudo mv ./fm_transmitter/ /usr/local/bin
-cd /usr/local/bin/fm_transmitter
-sudo make
+git clone https://github.com/ChristopheJacquet/PiFmRds.git
+sudo mv ./PiFmRds /usr/local/bin
+cd /usr/local/bin/PiFmRds
+make clean
+make
 
 git clone https://github.com/daweilv/treejs
 sudo mv ./treejs/dist /var/www/html/piradio
