@@ -79,7 +79,7 @@
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<!-- hier deaktiviert    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
 
     <!-- Option 2: Separate Popper and Bootstrap JS -->
     <!--
@@ -90,6 +90,8 @@
     <div class="radiostatus" id="emptyShellRadioStatus"></div>
 
     <button name="btnStopRadio" onclick="stopRadio()" >Stop Radio</button>
+
+    <button name="btnSkipSong" onclick="skipSong()" >Skip Song</button>
 
     <div id="audiotree" class="container"></div>
 
@@ -112,6 +114,16 @@
         });
 
         alert("Radio stopped");
+      }
+
+      function skipSong(){
+        $.ajax({
+          type: "POST",
+          url: 'fmradio.php',
+          data: {btnSkipSong: true},
+          dataType: "json",
+          success: function(data){},
+        });
       }
 
       function startRadio(playlist, frequency){
