@@ -16,12 +16,17 @@
   if(isset($_POST['btnStartRadio'])) {
     $playlist = $_POST['playlist'];
     $frequency = $_POST['frequency'];
+    $time = $_POST['time'];
     $playliststring = implode(" ", $playlist);
-    startRadio($playliststring, $frequency);
+    startRadio($playliststring, $frequency, $time);
   }
 
   if(isset($_POST['btnStopRadio'])) {
     stopRadio();
+  }
+
+  if(isset($_POST['btnSkipSong'])) {
+    skipSong();
   }
 
   if(isset($_POST['getAudiofiles'])) {
@@ -79,11 +84,16 @@
     echo json_encode($audiolist);
   }
 
-  function startRadio($audiopath, $frequency){
+  function startRadio($audiopath, $frequency, $time){
     stopRadio();
     sleep(1);
     //usleep(500000);
-    exec('sudo /bin/bash /usr/local/bin/radio.sh -f ' . $frequency . ' -n "' . $audiopath . '"' . " > /dev/null 2>/dev/null &");
+    if ($time != ''){
+      exec('sudo /bin/bash /usr/local/bin/radio.sh -j ' . $time . ' -f ' . $frequency . ' -n "' . $audiopath . '"' . " > /dev/null 2>/dev/null &");
+    }
+    else {
+      exec('sudo /bin/bash /usr/local/bin/radio.sh -f ' . $frequency . ' -n "' . $audiopath . '"' . " > /dev/null 2>/dev/null &");
+    }
   }
 
   function getRadioStatus(){
@@ -97,6 +107,8 @@
 //        $nowplayed = ltrim($nowplayed);
         $nowplayed = preg_split('/\//',$nowplayed);
         $nowplayed = end($nowplayed);
+        $nowplayed = preg_split('/-t wav/',$nowplayed);
+        $nowplayed = $nowplayed[0];
         $nowplayed = rtrim($nowplayed);
       }
     }

@@ -70,7 +70,6 @@
   .list-group-a .list-group-item-a:hover {
     background-color: #f7f7f7;
   }
-
   </style>
 
   <body>
@@ -99,7 +98,69 @@
 
     <div class="playlist" id="emptyShellPlaylist"></div>
 
-    <script>
+
+<!-- Button to Open the Modal -->
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> -->
+<!-- <button type="button" data-toggle="modal" data-target="#myModal">
+  Open modal
+</button> -->
+
+
+<!-- The Modal -->
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">FM Transmission</h4>
+       <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form onsubmit="event.preventDefault(); PlayPlaylist()">
+          <p>Enter the Broadcast Frequency between 88.0 - 105.0</p>
+          <input class="w3-input w3-border w3-margin-bottom" type="text" placeholder="88.0 - 105.0" id="frequencyid" required>
+          <p id="slideraudiofilename"></p>
+          <input type="range" value="0" min="0" max="100" step="3" id="timeid" oninput="updateSlider()">
+          <div id="slideroutput">00:00:00</div>
+          <input type="submit" value="Start Radio with Playlist">
+        </form>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/*function myFunction() {
+  var frequency = document.getElementById('frequencyid').value;
+  var time = document.getElementById('timeid').value;
+  console.log(playlist);
+
+  if(isNaN(frequency) || frequency < 88 || frequency > 105){
+    console.log("bitte frequenz ändern");
+    alert("Enter the Broadcast Frequency between 88.0 - 105.0");
+  }
+  else{
+    console.log(frequency);
+    console.log(time);
+  }
+}*/
+
+
+
+
+//var meineliste = "empty;"
+var fmplaylist = [];
+
+
       function Sleep(milliseconds) {
         return new Promise(resolve => setTimeout(resolve, milliseconds));
       }
@@ -126,14 +187,14 @@
         });
       }
 
-      function startRadio(playlist, frequency){
+      function startRadio(playlist, frequency, time){
         $.ajax({
           type: "POST",
           url: 'fmradio.php',
-          data: {btnStartRadio: true, playlist : playlist, frequency : frequency},
+          data: {btnStartRadio: true, playlist : playlist, frequency : frequency, time : time},
           dataType: "json",
           success: function(data){
-            console.log(data);
+//            console.log(data);
 //            response = data;
           },
         });
@@ -149,7 +210,7 @@
           dataType: "json",
           success: function(data){
             folders = data;
-            console.log(folders); //kann weg
+//            console.log(folders); //kann weg
           },
         });
       }
@@ -162,7 +223,7 @@
           dataType: "json",
           success: function(data){
             folders = data;
-            console.log(folders); //kann weg
+//            console.log(folders); //kann weg
           },
         });
       }
@@ -199,7 +260,7 @@
 async function createStatusInformation(){
   radiostatus = getRadioStatus();
   await Sleep(1000);
-  console.log(radiostatus);
+//  console.log(radiostatus);
 
   if(radiostatus.files == null && radiostatus.frequency == null){
     var elements = document.getElementById("emptyShellRadioStatus");
@@ -265,7 +326,6 @@ async function createTree(){
   await Sleep(500); 
   var filenodes = [];
 
-
   for(var i = 0; i < audiofiles.folders.length; i++){
     audiofiles.folders[i].children = [];
 
@@ -328,14 +388,14 @@ createStatusInformation();
 createTree();
 
 
-function myFunction() {
+/*function myFunction() {
   var elements = document.getElementById("playlist");
   elements.style.color = "red";
   console.log(myPlaylist);
   console.log(myPlaylist.el.children.length);
   console.log(myPlaylist.el.children[0].attributes[1].nodeValue);
   console.log(myPlaylist.el.children[0].attributes[2].nodeValue);  
-}
+}*/
 
 function createPlaylist(playlist){
   var elements = document.getElementById("emptyShellPlaylist");
@@ -343,73 +403,160 @@ function createPlaylist(playlist){
     elements.removeChild(elements.firstChild);
   }
 
-  var rowDIV = document.createElement("DIV");
-  rowDIV.className = "row";
-  var colDIV = document.createElement("DIV");
-  colDIV.className = "col-sm-9 col-xl-10 order-2 order-sm-1 mt-3";
-  var listgroupDIV = document.createElement("DIV");
-  listgroupDIV.className = "list-group mb-4 mt-3";
-  listgroupDIV.setAttribute("id", "sortableplaylist");
-  listgroupDIV.setAttribute("data-id", "1");
-  
-  for(var i = 0; i < playlist.length; i++){
-     var listgroupitemDIV = document.createElement("DIV");
-     listgroupitemDIV.className = "list-group-item d-flex align-items-center justify-content-between";
-     listgroupitemDIV.setAttribute("data-id", playlist[i].id);
-     listgroupitemDIV.setAttribute("filepath", playlist[i].path);
-//            console.log(playlist[i].path);
-     var textDIV = document.createElement("DIV");
-     var textNode = document.createElement("p");
-     textNode.className = "mb-0 d-inline-flex align-items-center";
-     textNode.innerHTML = playlist[i].text;
-
-     textDIV.appendChild(textNode);
-     listgroupitemDIV.appendChild(textDIV);
-     listgroupDIV.appendChild(listgroupitemDIV);
+  if (playlist.length === 0) {
+    alert("please select an audiofile");
   }
+  else{
+    var rowDIV = document.createElement("DIV");
+    rowDIV.className = "row";
+    var colDIV = document.createElement("DIV");
+    colDIV.className = "col-sm-9 col-xl-10 order-2 order-sm-1 mt-3";
+    var listgroupDIV = document.createElement("DIV");
+    listgroupDIV.className = "list-group mb-4 mt-3";
+    listgroupDIV.setAttribute("id", "sortableplaylist");
+    listgroupDIV.setAttribute("data-id", "1");
+  
+    for(var i = 0; i < playlist.length; i++){
+       var listgroupitemDIV = document.createElement("DIV");
+       listgroupitemDIV.className = "list-group-item d-flex align-items-center justify-content-between";
+       listgroupitemDIV.setAttribute("data-id", playlist[i].id);
+       listgroupitemDIV.setAttribute("filepath", playlist[i].path);
+       listgroupitemDIV.setAttribute("length", playlist[i].length);
+       var textDIV = document.createElement("DIV");
+       var textNode = document.createElement("p");
+       textNode.className = "mb-0 d-inline-flex align-items-center";
+       textNode.innerHTML = playlist[i].text;
 
-  colDIV.appendChild(listgroupDIV);
-  rowDIV.appendChild(colDIV);
+       textDIV.appendChild(textNode);
+       listgroupitemDIV.appendChild(textDIV);
+       listgroupDIV.appendChild(listgroupitemDIV);
+    }
+  
 
-  var BtnPlay = document.createElement("BUTTON");
-  BtnPlay.name='btnPlayPlaylist';
-  BtnPlay.className = "PlayButton";
-  BtnPlay.onclick = function(){PlayPlaylist(meineliste);};
-  BtnPlay.innerHTML = "Start Radio with Playlist";
+    colDIV.appendChild(listgroupDIV);
+    rowDIV.appendChild(colDIV);
 
-  elements.appendChild(rowDIV);
-  elements.appendChild(BtnPlay);
+    var BtnPlay = document.createElement("BUTTON");
+    BtnPlay.name='btnPlayPlaylist';
+    BtnPlay.className = "PlayButton";
+//    BtnPlay.onclick = function(){PlayPlaylistold(meineliste);};
+    BtnPlay.onclick = function(){openModal(meineliste);};
+    BtnPlay.innerHTML = "Start Radio with Playlist";
 
-  var meineliste = new Sortable(sortableplaylist, {
-    removeOnSpill: true,
-    animation: 150,
-    ghostClass: 'sortable-ghost'
-  });
+    elements.appendChild(rowDIV);
+    elements.appendChild(BtnPlay);
 
-//  console.log(meineliste.el.children.length);
-//  console.log(meineliste.el.children[0].dataset.id);
-//  console.log(meineliste.el.children[0].attributes[1].nodeValue);
-//  console.log(meineliste.el.children[0].attributes[2].nodeValue);
-  return meineliste;
+    var meineliste = new Sortable(sortableplaylist, {
+      removeOnSpill: true,
+      animation: 150,
+      ghostClass: 'sortable-ghost'
+    });
+
+    return meineliste;
+  }
 }
 
-function PlayPlaylist(playlist){
+function PlayPlaylistold(playlist){
   var fmplaylist = [];
   for(var i = 0; i < playlist.el.children.length; i++){
     fmplaylist.push(playlist.el.children[i].attributes[2].nodeValue); // get the file path value
   }
 
-  frequency = window.prompt("Enter the Broadcast Frequency between 88.0 - 105.0");
+  frequency = window.prompt("Enter the Broadcast Frequency between 88.0 - 105.0 MHz");
   while(isNaN(frequency) || frequency < 88 || frequency > 105){
     if(frequency === null)
     {
       break;
     }
-    frequency = window.prompt("Enter the Broadcast Frequency between 88.0 - 105.0");
+    frequency = window.prompt("Enter the Broadcast Frequency between 88.0 - 105.0 MHz");
   }
   if(frequency !== null){    
     startRadio(fmplaylist, frequency);  
   }
+}
+
+function PlayPlaylist() {
+  var frequency = document.getElementById('frequencyid').value;
+  var time = document.getElementById('timeid').value;
+
+  if(isNaN(frequency) || frequency < 88 || frequency > 105){
+    //console.log("bitte frequenz ändern");
+    alert("Enter the Broadcast Frequency between 88.0 - 105.0 MHz");
+  }
+  else{
+    console.log(frequency);
+    console.log(time);
+    console.log(fmplaylist);
+    startRadio(fmplaylist, frequency, time);    
+  }
+}
+
+function openModal(playlist){
+  fmplaylist = [];
+  let AudioSlider = document.getElementById("timeid");    
+  for(var i = 0; i < playlist.el.children.length; i++){
+    fmplaylist.push(playlist.el.children[i].attributes[2].nodeValue); // get the file path value
+  }
+  let rangemax = 0;
+  let audiolength = playlist.el.children[0].attributes[3].nodeValue.split(':');
+  if(audiolength.length == 3){
+    rangemax = parseInt(audiolength[0]) * 3600; 
+    rangemax = rangemax + parseInt(audiolength[1]) * 60; 
+    rangemax = rangemax + parseInt(audiolength[2]);
+  }
+  if(audiolength.length == 2){
+    rangemax = rangemax + parseInt(audiolength[0]) * 60;
+    rangemax = rangemax + parseInt(audiolength[1]);
+  }
+  AudioSlider.setAttribute("max", rangemax);
+  document.getElementById("timeid").value = 0;
+  document.getElementById("slideroutput").innerHTML = "00:00:00";
+  let audiofiletext = fmplaylist[0].split('/');
+  audiofiletext = audiofiletext.at(-1);
+  document.getElementById("slideraudiofilename").innerHTML = audiofiletext;
+
+  $('#myModal').modal('show')
+}
+
+function updateSlider(){
+  let slidervalue = document.getElementById("timeid").value;
+  let hour = 3600;
+  let minute = 60;
+  let h = 0;
+  let m = 0;
+  let s = 0;
+
+  while(slidervalue >= hour){
+    slidervalue = slidervalue - hour;
+    h = h + 1;
+  }
+  while(slidervalue >= minute){
+    slidervalue = slidervalue - minute;
+    m = m + 1;
+  }
+  s = slidervalue
+
+  let output = "";
+  if(h < 10){
+    output = "0" + h;
+  }
+  else{
+    output = h;
+  }
+  if(m < 10){
+    output = output + ":" + "0" + m;
+  }
+  else{
+    output = output + ":" + m;
+  }
+  if(s < 10){
+    output = output + ":" + "0" + s;
+  }
+  else{
+    output = output + ":" + s;
+  }
+
+  document.getElementById("slideroutput").innerHTML = output;
 }
 
     </script>
