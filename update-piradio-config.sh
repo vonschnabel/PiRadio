@@ -52,6 +52,8 @@ else
     echo "The new Audiopath:  $answer  was set in the config file $aliasfile"
     sed -i "s:${string1}:${string1new}:" $aliasfile
     sed -i "s:${string2}:${string2new}:" $aliasfile
+    echo "Reloading Apache2 Service"
+    systemctl restart apache2.service
   elif [ "$string1found" == false ] && [ "$string2found" == false ] ; then
     echo "No entry was found in Apache2 config file $aliasfile"
     echo "The new Audiopath:  $answer  was set in the config file $aliasfile"
@@ -61,6 +63,8 @@ else
     echo -e "\t$string2new" >> $aliasfile
     echo -e "\t\tRequire all granted" >> $aliasfile
     echo -e "\t</Directory>" >> $aliasfile
+    echo "Reloading Apache2 Service"
+    systemctl restart apache2.service
   else
     echo "The Apach2 config file seems invalid. Please check the config file $aliasfile"
     : # do nothing
