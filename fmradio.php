@@ -13,6 +13,12 @@
   echo "database: $DB_NAME<br>";
   echo "table: $TABLE<br>";*/
 
+  if(isset($_GET['getAudioFilePath'])) {
+    $conf_array = parse_ini_file("/usr/local/bin/piradio.conf");
+    $audiofilepath = $conf_array[path];
+    echo json_encode($audiofilepath, JSON_UNESCAPED_SLASHES);
+  }
+
   if(isset($_POST['btnStartRadio'])) {
     $playlist = $_POST['playlist'];
     $frequency = $_POST['frequency'];
