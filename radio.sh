@@ -32,7 +32,7 @@ for i in "${audiofiles[@]}"; do
     text=$(basename "$i")
     IFS='.' read -r -a textarr <<< $text
     text=$textarr
-  if [ $i == ${audiofiles[0]} ] && ! [ -z "$jump" ]; then
+  if [ "$i" == "${audiofiles[0]}" ] && ! [ -z "$jump" ]; then
     sox -t mp3 "$i" -t wav - trim $jump | sudo /usr/local/bin/PiFmRds/src/pi_fm_rds -freq $frequency -ps "$STATIONNAME" -rt "$text" -audio -
   else
     sox -t mp3 "$i" -t wav - | sudo /usr/local/bin/PiFmRds/src/pi_fm_rds -freq $frequency -ps "$STATIONNAME" -rt "$text" -audio -
