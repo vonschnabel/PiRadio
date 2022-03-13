@@ -181,6 +181,9 @@ var fmplaylist = [];
           dataType: "json",
           success: function(data){},
         });
+        
+        alert("Song skipped");
+        document.location.reload();
       }
 
       function startRadio(playlist, frequency, time){
