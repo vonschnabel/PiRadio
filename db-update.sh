@@ -1,4 +1,5 @@
 #!/bin/bash
+start=`date +%s`
 source /usr/local/bin/piradio.conf
 
 echo "#############################"
@@ -11,6 +12,8 @@ echo "Audiopath: $path"
 echo "Database: $DB_NAME"
 echo "Tablename: $TABLE"
 echo "DB User: $DB_USER"
+echo
+echo "Searching for audio files. This may take a while..."
 echo
 
 audiofiles=($(eval "find $path -name \*.mp3 -print"))
@@ -59,6 +62,12 @@ for ((i = 0 ; i < ${#audiopaths[@]} ; i++)); do # delete duplicates from folders
   done
 done
 
+##
+echo "number of found audio files: ${#audiofiles[@]}"
+echo "number of found audio folders: ${#audiopaths[@]}"
+echo
+##
+
 IFS=$'\n' sortedaudiopaths=($(sort <<<"${audiopaths[*]}")); unset IFS # sort the array in alphabetical order
 
 # Transfer files and folder structure into database
@@ -73,10 +82,16 @@ for i in "${sortedaudiopaths[@]}"; do
   mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"INSERT INTO audiofiles (filename, path, length) VALUES ('$filename', '$pathvar', NULL);"
 done
 
+echo "inserting files to database"
+echo
+
+skippedfiles=()
+
 for i in "${audiofiles[@]}"; do
   length=$(soxi -V0 -d "$i") # -V0 Log Level 0, suppress warnings
   if [ -z "$length" ];then # length could not be read. skipping this file
     echo "the length of this file could not be read, skipping it: $i"
+    skippedfiles+=("$i")
   else
     length="${length:1}" # delete first char. audio files max length ist therefore 9 hours 59 minutes
     length="${length::-3}" # delete the last 3 chars (Miliseconds)
@@ -85,9 +100,9 @@ for i in "${audiofiles[@]}"; do
     filename="${patharray[-1]}" # get the last element of splitted string
     pathvar=$i
     mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"INSERT INTO $TABLE (filename, path, length) VALUES ('$filename', '$pathvar', '$length');"
+    echo "filename: $pathvar"
   fi
 done
-
 
 pathaudiofiles=$(mysql -N -D$DB_NAME -u$DB_USER -p$DB_PASSWD -se "SELECT path FROM $TABLE where length is not NULL")
 pathfolders=$(mysql -N -D$DB_NAME -u$DB_USER -p$DB_PASSWD -se "SELECT path FROM $TABLE where length is NULL")
@@ -96,6 +111,10 @@ idfolders=$(mysql -N -D$DB_NAME -u$DB_USER -p$DB_PASSWD -se "SELECT id FROM $TAB
 readarray -t arrfolderspath <<<${pathfolders}
 readarray -t arrfoldersid <<<${idfolders}
 readarray -t arraudiofilespath <<<${pathaudiofiles}
+
+echo
+echo "updating database structure"
+echo
 
 for ((i = 0 ; i < ${#arrfolderspath[@]} ; i++)); do # set the parent ID for the folders
   readarray -d / -t arr <<<${arrfolderspath[$i]}
@@ -136,4 +155,17 @@ done
 # set the parent ID 0 for all files in the root path
 mysql -D$DB_NAME -u$DB_USER -p$DB_PASSWD -e"UPDATE $TABLE SET parent_id = 0 WHERE (parent_id IS NULL) AND (filename IS NOT NULL);"
 
-echo "script finnished"
+
+echo
+echo "number of skipped files: ${#skippedfiles[@]}"
+echo "These files were skipped because they could not be read by sox"
+echo
+for i in "${skippedfiles[@]}"
+do
+  echo "$i"
+done
+
+end=`date +%s`
+runtime=$((end-start))
+echo
+echo "script finnished after $runtime seconds"
