@@ -52,8 +52,8 @@ sudo wget -P /var/www/html/piradio https://maxcdn.bootstrapcdn.com/bootstrap/3.3
 git clone https://github.com/ChristopheJacquet/PiFmRds.git
 sudo mv ./PiFmRds /usr/local/bin
 cd /usr/local/bin/PiFmRds
-make clean
-make
+sudo make clean
+sudo make
 
 git clone https://github.com/daweilv/treejs
 sudo mv ./treejs/dist /var/www/html/piradio
